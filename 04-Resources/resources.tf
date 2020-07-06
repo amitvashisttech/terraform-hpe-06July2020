@@ -9,7 +9,7 @@ provider "google" {
 resource "google_compute_instance" "frontend" {
   name         = "frontend-av"
   machine_type = "f1-micro"
-  depends_on   = [google_compute_instance.backend]
+  depends_on   = ["google_compute_instance.backend"]
 
   boot_disk {
     initialize_params {
@@ -25,7 +25,7 @@ resource "google_compute_instance" "frontend" {
   }
 
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }
 
 }
@@ -54,7 +54,3 @@ resource "google_compute_instance" "backend" {
   }
  
 }
-
-
-
-
