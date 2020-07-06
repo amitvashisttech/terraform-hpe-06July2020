@@ -1,6 +1,6 @@
 #########GCP##########
 provider "google" {
-  credentials = "${file("/home/terraform01/.ssh/account.json")}"
+  credentials = "${file("/tmp/account.json")}"
   project     = "gleaming-design-282503"
   region      = "us-central1"
 #  version     = "~> 1.20.0"
