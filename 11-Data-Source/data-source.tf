@@ -51,7 +51,7 @@ resource "google_compute_instance" "frontend" {
   provider      	= "google.myregion"
   name     		= "${join("-",list(var.environment-name, "frontend"))}"
   depends_on 		= ["google_compute_instance.backend"]
-  count    		= 4
+  count    		= 2
   #zone     		= "${var.us-central-zones[count.index]}"
   zone     		= "${data.google_compute_zones.us-central1.names[count.index]}"
   machine_type 		= "f1-micro"
@@ -113,4 +113,13 @@ resource "google_compute_instance" "west_backend" {
   lifecycle {
     prevent_destroy = false
   }
+}
+
+
+output "zones_west1" {
+   value = "${data.google_compute_zones.us-west1.names}"
+}
+
+output "zones_central1" {
+   value = "${data.google_compute_zones.us-central1.names}"
 }
