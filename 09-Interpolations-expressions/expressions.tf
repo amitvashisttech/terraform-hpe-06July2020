@@ -31,7 +31,7 @@ variable "environment-name" {
 
 resource "google_compute_instance" "west_frontend" {
   depends_on 		= ["google_compute_instance.west_backend"]
-  name     		= "${join("-",var.environment-name, "frontend-west")}"
+  name     		= "${join("-",list(var.environment-name, "frontend-west"))}"
   count    		= "${var.multi-region-deployment ? 1 : 0}"
   zone     		= "${var.us-west-zones[count.index]}"
   machine_type 		= "f1-micro"
@@ -114,6 +114,6 @@ resource "google_compute_instance" "west_backend" {
 }
 
 
-#output "backend_ips" {
-#  value = "${list ("${google_compute_instance.backend[*].network_interface[0].access_config[0].nat_ip}","${google_compute_instance.backend[*].network_interface[0].network_ip}")}"
-#}
+output "backend_ips" {
+  value = "${list ("${google_compute_instance.backend.*.network_interface.0.access_config.0.nat_ip}","${google_compute_instance.backend.*.network_interface.0.network_ip}")}"
+}
