@@ -1,10 +1,9 @@
 #########GCP##########
 provider "google" {
-  credentials = file("/home/terrafrom07/.ssh/account.json")
-  project     = "k8s-terraform-demo-272708"
+  project     = "gleaming-design-282503"
+  credentials = "${file("/tmp/account.json")}"
   region      = "us-west1"
 }
-
 
 variable "zones" {
   default = ["us-west1-a", "us-west1-b"]
@@ -14,7 +13,7 @@ resource "google_compute_instance" "frontend" {
   name         = "frontend-${count.index}"
   machine_type = "f1-micro"
   count                 = 2
-  zone     = var.zones[count.index]
+  zone     = "${var.zones[count.index]}"
 
   boot_disk {
     initialize_params {
