@@ -1,11 +1,11 @@
 provider "google" {
-  credentials = file("/tmp/account.json")
+  credentials = "${file("/tmp/account.json")}"
   project     = "gleaming-design-282503"
   region      = "us-west1"
 }
 
 provider "google" {
-  credentials = file("/tmp/account.json")
+  credentials = "${file("/tmp/account.json")}"
   project     = "gleaming-design-282503"
   region      = "us-central1"
   alias       = "myregion"
@@ -29,8 +29,8 @@ variable "environment-name" {
 
 
 locals {
-  default_frontend_name = "${join("-",list(var.environment-name, "f"))}"
-  default_backend_name  = "${join("-",list(var.environment-name, "b"))}"
+  default_frontend_name = "${join("-",list(var.environment-name, "proxy"))}"
+  default_backend_name  = "${join("-",list(var.environment-name, "database"))}"
 }
 
 
