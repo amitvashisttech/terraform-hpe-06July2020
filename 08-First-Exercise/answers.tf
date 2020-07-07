@@ -1,30 +1,30 @@
 provider "google" {
-  credentials = file("/home/terrafrom07/.ssh/account.json")
-  project     = "k8s-terraform-demo-272708"
-  region      = "us-west1"
+  region      = "asia-east1"
+  project     = "gleaming-design-282503"
+  credentials = "${file("/tmp/account.json")}"
 }
 
 provider "google" {
-  credentials = file("/home/terrafrom07/.ssh/account.json")
-  project     = "k8s-terraform-demo-272708"
-  region      = "us-central1"
+  project     = "gleaming-design-282503"
+  credentials = "${file("/tmp/account.json")}"
+  region      = "asia-east2"
   alias       = "myregion"
 }
 
-variable "us-west-zones" {
-  default = ["us-west1-a", "us-west1-b"]
+variable "asia-east1-zones" {
+  default = ["asia-east1-a", "asia-east1-b"]
 }
 
-variable "us-central-zones" {
-  default = ["us-central1-a", "us-central1-b"]
+variable "asia-east2-zones" {
+  default = ["asia-east2-a", "asia-east2-b"]
 }
 
 
 resource "google_compute_instance" "west_frontend" {
-  depends_on 		= [google_compute_instance.west_backend]
-  name     		= "west-frontend-${count.index}"
+  depends_on 		= ["google_compute_instance.west_backend"]
+  name     		= "west-frontend-tf01-${count.index}"
   count    		= 2
-  zone     		= var.us-west-zones[count.index]
+  zone     		= "${var.asia-east1-zones[count.index]}"
   machine_type 		= "f1-micro"
   boot_disk {
     initialize_params {
@@ -37,14 +37,18 @@ resource "google_compute_instance" "west_frontend" {
     access_config {
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_instance" "frontend" {
-  provider      	= google.myregion
-  depends_on 		= [google_compute_instance.backend]
-  name     		= "frontend-${count.index}"
+  provider      	= "google.myregion"
+  depends_on 		= ["google_compute_instance.backend"]
+  name     		= "frontend-av-${count.index}"
   count    		= 2
-  zone     		= var.us-central-zones[count.index]
+  zone     		= "${var.asia-east2-zones[count.index]}"
   machine_type 		= "f1-micro"
   boot_disk {
     initialize_params {
@@ -57,15 +61,19 @@ resource "google_compute_instance" "frontend" {
     access_config {
     }
   }
+
+ lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
 resource "google_compute_instance" "backend" {
-  provider      		= google.myregion
+  provider      		= "google.myregion"
   name         			= "backend-${count.index}"
   machine_type 			= "f1-micro"
   count                 	= 2
-  zone     			= var.us-central-zones[count.index]
+  zone     			= "${var.asia-east2-zones[count.index]}"
   boot_disk {
     initialize_params {
       image 			= "debian-cloud/debian-9"
@@ -78,7 +86,7 @@ resource "google_compute_instance" "backend" {
     }
   }
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -87,7 +95,7 @@ resource "google_compute_instance" "west_backend" {
   name         			= "west-backend-${count.index}"
   machine_type 			= "f1-micro"
   count                 	= 2
-  zone     			= var.us-west-zones[count.index]
+  zone     			= "${var.asia-east1-zones[count.index]}"
   boot_disk {
     initialize_params {
       image 			= "debian-cloud/debian-9"
@@ -100,7 +108,7 @@ resource "google_compute_instance" "west_backend" {
     }
   }
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -112,17 +120,17 @@ resource "google_compute_instance" "west_backend" {
 
 
 output "frontend" {
-  value = "${google_compute_instance.frontend[*].network_interface[0].access_config[0].nat_ip}"
+  value = "${google_compute_instance.frontend.*.network_interface.0.access_config.0.nat_ip}"
 }
 
 output "backend" {
-  value = "${google_compute_instance.backend[*].network_interface[0].access_config[0].nat_ip}"
+  value = "${google_compute_instance.backend.*.network_interface.0.access_config.0.nat_ip}"
 }
 
 output "frontend_west" {
-  value = "${google_compute_instance.west_frontend[*].network_interface[0].access_config[0].nat_ip}"
+  value = "${google_compute_instance.west_frontend.*.network_interface.0.access_config.0.nat_ip}"
 }
 
 output "backend_west" {
-  value = "${google_compute_instance.west_backend[*].network_interface[0].access_config[0].nat_ip}"
+  value = "${google_compute_instance.west_backend.*.network_interface.0.access_config.0.nat_ip}"
 }
