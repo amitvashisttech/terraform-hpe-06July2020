@@ -19,5 +19,5 @@ variable "images" {
 }
 
 variable "project" {
-  default = "k8s-terraform-demo-272708"
+  default = "gleaming-design-282503"
 }
