@@ -1,10 +1,11 @@
 #########GCP##########
 provider "google" {
-  credentials = "${file("/home/terrafrom07/.ssh/account.json")}"
-  project     = "k8s-terraform-demo-272708"
+  project     = "gleaming-design-282503"
+  credentials = "${file("/tmp/account.json")}"
   region      = "us-west1"
   zone        = "us-west1-c"
 }
+
 
 locals {
   default_name = "${join("-", list(terraform.workspace, "example"))}"
