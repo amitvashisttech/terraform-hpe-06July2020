@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = "${file("/home/terrafrom07/.ssh/account.json")}"
+  credentials = "${file("/tmp/account.json")}"
   project     = "${var.project}"
   region      = "${var.region}"
 }
